@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="estilo.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+<div class="col-xs-12 col-sm-12 col-md-offset-3 col-md-5 col-lg-offset-3 col-lg-5">
+<div id="app">
+    <h1>{{tema}}</h1>
+    <!--Formulario-->
+    <form action="" @submit.prevent="agregarTarea(nuevaTarea)" class="form">
+        <div class="input-group">
+            <input v-model="nuevaTarea" type="text" class="form-control">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-plus"></span>Añadir tarea</button>
+            </span>
+        </div>
+    </form>
+    <!--Listado de tareas-->
+    <ul class="list-group">
+        <li v-for="(tarea, index) in tareas" class="list-group-item clearfix">
+            <p class="lead" :class="{completado: tarea.completado}">{{tarea.titulo}}</p>
+            <input v-model="tarea.titulo"
+                   v-show="editandoTarea=== index"
+                   @blur="editandoTarea=null, editarTarea(tarea)"
+                   type="text">
+            <div>
+                <span class="pull-right">
+                    <button @click="editandoTarea=index" class="btn btn-default btn-xs">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </button>
+                    <button v-show="editandoTarea === index"
+                            @click="editandoTarea=null, editarTarea(tarea)" class="btn btn-default btn-xs">
+                        <span class="glyphicon glyphicon-floppy-saved"></span>
+                    </button>
+                    <button @click="tarea.completado= true"
+                            class="btn btn-primary btn-xs">
+                        <span class="glyphicon glyphicon-ok"></span>
+                    </button>
+                    <button @click="tarea.completado= false"
+                            class="btn btn-primary btn-xs">
+                        <span class="glyphicon glyphicon-repeat"></span>
+                    </button>
+                    <button @click="eliminarTarea(index)" class="btn btn-danger btn-xs">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+                </span>
+            </div>
+        </li>
+    </ul>
+    <pre>{{ $data }}</pre>
+</div>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.3/vue.js"></script>
+<script src="vue.js"></script>
+</body>
+</html>
