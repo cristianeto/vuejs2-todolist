@@ -1,20 +1,15 @@
 /**
  * Created by Cristian on 30/11/16.
  */
-new Vue({
-    el: '#app',
-    data:{
-        tema: 'Vuejs & Firebase',
-        nuevaTarea:null,
-        editandoTarea:null,
-        tareas:[
-            {titulo:'Salir a correr.', completado:false},
-            {titulo:'Ir al gimnasio.', completado:false},
-            {titulo:'Limpiar el coche.', completado:true},
-            {titulo:'Hacer la compra.', completado:false},
-            {titulo:'Aprender Vuejs & Firebase', completado:false}
-        ]
+Vue.component('todo-list',{
+    template:'#todo-template',
+    data:function(){
+        return{
+            nuevaTarea:null,
+            editandoTarea:null,
+        }
     },
+    props:['tareas'],
     methods:{
         agregarTarea:function(tarea){
             //console.info(tarea);
@@ -30,4 +25,20 @@ new Vue({
             this.tareas.splice(indice,1); //eliminar el elemento de ese indice
         }
     }
+});
+
+new Vue({
+    el: '#app',
+    data:{
+        tema: 'Vuejs & Firebase',
+
+        tareas:[
+            {titulo:'Salir a correr.', completado:false},
+            {titulo:'Ir al gimnasio.', completado:false},
+            {titulo:'Limpiar el coche.', completado:true},
+            {titulo:'Hacer la compra.', completado:false},
+            {titulo:'Aprender Vuejs & Firebase', completado:false}
+        ]
+    },
+
 });
