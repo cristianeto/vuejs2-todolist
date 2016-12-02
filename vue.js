@@ -15,8 +15,11 @@ firebase.initializeApp(config);
 
 /*Usando real Database*/
 // Get a reference to the database service
-var dataBase = firebase.database();
-
+var dataBase = firebase.database(),
+//autenticacion
+ auth=firebase.auth(),
+//proveedor
+ provider = new firebase.auth.GoogleAuthProvider();
 Vue.component('todo-list',{
     template:'#todo-template',
     data:function(){
@@ -25,11 +28,16 @@ Vue.component('todo-list',{
             editandoTarea:null,
         }
     },
-    props:['tareas'],
+    props:['tareas','autentificado', 'usuarioActivo'],
     methods:{
         agregarTarea:function(tarea){
             dataBase.ref('tareas/').push({
-                titulo: tarea, completado: false,
+                titulo: tarea,
+                completado: false,
+                nombre: vm.usuarioActivo.displayName,
+                avatar: vm.usuarioActivo.photoURL,
+                uid: vm.usuarioActivo.uid
+
             });
             this.nuevaTarea='';
         },
@@ -56,6 +64,7 @@ Vue.component('todo-list',{
 var vm=new Vue({
     el: '#app',
     mounted: function(){
+        //DATAbase
         dataBase.ref('tareas/').on('value', function(snapshot){
            //console.log(snapshot.val());
             vm.tareas=snapshot.val();
@@ -65,14 +74,48 @@ var vm=new Vue({
                 vm.tareas.unshift({
                     '.key': propiedad,
                     completado: objeto[propiedad].completado,
-                    titulo: objeto[propiedad].titulo
+                    titulo: objeto[propiedad].titulo,
+                    avatar: objeto[propiedad].avatar,
+                    nombre: objeto[propiedad].nombre,
+                    uid: objeto[propiedad].uid
                 });
+            }
+        });
+        //Auth
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                console.info('Conectado: '+user);
+                vm.autentificado=true;
+                vm.usuarioActivo=user;
+            } else {
+                // No user is signed in.
+                console.warn('No Conectado');
+                vm.autentificado=false;
+                vm.usuarioActivo=null;
             }
         });
     },
     data:{
         tema: 'Vuejs & Firebase',
-        tareas:[]
+        tareas:[],
+        autentificado:false,
+        usuarioActivo:null,
     },
+    methods:{
+        conectar:function(){
+            firebase.auth().signInWithPopup(provider).catch(function(result) {
+               console.error('Error haciendo login: ', error);
+            });
+        },
+        desconectar:function(){
+            firebase.auth().signOut().then(function() {
+                // Sign-out successful.
+                console.info('Usuario desconectado exitosamente')
+            }, function(error) {
+                // An error happened.
+                console.error('Error haciendo log-out ',error)
+            });
+        }
+    }
 
 });
